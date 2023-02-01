@@ -39,7 +39,7 @@ router.post('/packageAdd', async (req, res) => {
 
 
 
-      //insert value in attribute
+      //insert value in attribute 
       const attibuteVerify = await pool.query('SELECT * FROM attribute_pkg WHERE attribute_name = $1', [req.body.attributeTitle]);
               
       let get_attribute_id ;
