@@ -1,11 +1,12 @@
-import express, {json} from 'express';
-import cors from 'cors';
-import usersRouter from './routes/users-routes.js';
-import authRouter from './routes/auth-routes.js';
-import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
-import packageRoute from './routes/PackagesRoutes.js';
 
+const express=require('express');
+const cors = require('cors');
+const usersRouter = require('./routes/users-routes.js');
+const authRouter = require('./routes/auth-routes.js');
+const dotenv = require('dotenv');
+const cookieParser =require('cookie-parser');
+const packageRoute = require('./routes/PackagesRoutes.js');
+const userProfile = require('./routes/ProfileEdit.js');
 dotenv.config();
 
 
@@ -15,14 +16,15 @@ const PORT = process.env.PORT || 8000;
 const corsOptions = {credentials:true, origin: process.env.URL || '*'};
 
 app.use(cors(corsOptions));
-app.use(json());
+app.use(express.json());
 app.use(cookieParser());
 
 
 app.use('/api/auth',authRouter);
 app.use('/api/register', usersRouter);
 app.use('/api/',usersRouter);
-app.use('/api/',packageRoute);
+app.use('/api/', packageRoute);
+app.use('/api/',userProfile)
 
 
 app.listen(PORT, ()=> {
