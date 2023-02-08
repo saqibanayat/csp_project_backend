@@ -7,6 +7,7 @@ const dotenv = require('dotenv');
 const cookieParser =require('cookie-parser');
 const packageRoute = require('./routes/PackagesRoutes.js');
 const userProfile = require('./routes/ProfileEdit.js');
+const attributeValue = require('./routes/Attributes.js')
 dotenv.config();
 
 
@@ -25,7 +26,7 @@ app.use('/api/register', usersRouter);
 app.use('/api/',usersRouter);
 app.use('/api/', packageRoute);
 app.use('/api/',userProfile)
-
+app.use('/api/',attributeValue)
 
 app.listen(PORT, ()=> {
   console.log(`Server is listening on port:${PORT}`);

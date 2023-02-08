@@ -49,37 +49,24 @@ router.post('/packageAdd', async (req, res) => {
 
 
       //insert value in attribute 
-      const attibuteVerify = await pool.query('SELECT * FROM attribute_pkg WHERE attribute_name = $1', [req.body.attributeTitle]);
-              
-      let get_attribute_id ;
-
-      if(attibuteVerify.rows[0]) {
-        get_attribute_id = attibuteVerify.rows[0].attribute_id
-
-      }else if(attibuteVerify.rows.length === 0)
-      {
+     
 
        //insert attributes
        let arr_atribute = req.body.attribute;
        
        for(let i=0;i<=arr_atribute.length-1; i++){
-        console.log(arr_atribute[i].attributeTitle);
- await pool.query('INSERT INTO attribute_pkg(attribute_name) VALUES ($1)',
-     [arr_atribute[i].attributeTitle])
-    
+        
+        await pool.query('INSERT INTO package_attribute (pack_id,attribute_id ,attribute_value) VALUES($1,$2,$3)',
+     
+        [get_package_id,arr_atribute[i].attribute_id,arr_atribute[i].value])
+        
        }
        
-       
-     const get_id  = await pool.query('SELECT attribute_id FROM attribute_pkg WHERE attribute_name= $1',[req.body.attributeTitle])
-    
-     get_attribute_id = get_id .rows[0].attribute_id
-
-      }
+     
+      
 
      //insert id's of package and attribute as forign key
-     await pool.query('INSERT INTO package_attribute (pack_id,attribute_id , attribute_value) VALUES($1,$2,$3)',
-     
-     [get_package_id,get_attribute_id,req.body.attributeValue])
+    
 
   res.json({message:"successfully add package"})
   } catch (error) {
