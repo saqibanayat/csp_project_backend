@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
     
     let tokens = jwtTokens(users.rows[0]);//Gets access and refresh tokens
     let refresh = refreshJwtToken(users.rows[0])
-    res.cookie('refresh_token', refresh.refreshToken, {httpOnly: true});
+    res.cookie('refresh_token', refresh.refreshToken, {httpOnly: true,sameSite:'None',maxAge:1000*60*60*24});
     res.json({getUserType,userName,tokens});
   } catch (error) {
     res.status(401).json({error: error.message});

@@ -3,7 +3,7 @@ const express = require('express');
 
 const pool = require('../db.js');
 
-const {authenticateToken} =require( '../middleware/authorization.js')
+// const {authenticateToken} =require( '../middleware/authorization.js')
 const router = express.Router();
 
 
@@ -23,7 +23,7 @@ router.get('/showPackages', async (req,res)=>{
 //--------------------------------------------------------------------------
 
 
-router.post('/packageAdd', authenticateToken,async (req, res) => {
+router.post('/packageAdd', async (req, res) => {
   try {
 
 
