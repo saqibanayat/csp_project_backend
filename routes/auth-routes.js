@@ -10,11 +10,17 @@ router.post('/login', async (req, res) => {
  
   try {
     // console.log(req.cookies, req.get('origin'));
+    if(!(req.body.email && req.body.password )){
+      return res.status(401).json({error:"please fill all the credentials"})
+    }
+
     const {email,password} = req.body;
     
     const users = await pool.query('SELECT * FROM usersdata WHERE user_email = $1', [email]);
     if (users.rows.length === 0) return res.status(401).json({error:"Email is incorrect"});
     const userName = users.rows[0].user_name;
+    const userEmail = users.rows[0].user_email;
+   
     //PASSWORD CHECK
     const validPassword = await bcrypt.compare(password, users.rows[0].user_password);
     if (!validPassword) return res.status(401).json({error: "Incorrect password"});
@@ -26,8 +32,8 @@ router.post('/login', async (req, res) => {
     
     let tokens = jwtTokens(users.rows[0]);//Gets access and refresh tokens
     let refresh = refreshJwtToken(users.rows[0])
-    res.cookie('refresh_token', refresh.refreshToken, {httpOnly: true});
-    res.json({getUserType,userName,tokens});
+    res.cookie('refresh_token', refresh.refreshToken, { sameSite:'none',maxAge:1000*365*60*60*24})
+    res.json({getUserType,userName,userEmail,tokens});
   } catch (error) {
     res.status(401).json({error: error.message});
   }

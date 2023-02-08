@@ -3,7 +3,7 @@ const express = require('express');
 
 const pool = require('../db.js');
 
-const {authenticateToken} =require( '../middleware/authorization.js')
+// const {authenticateToken} =require( '../middleware/authorization.js')
 const router = express.Router();
 
 
@@ -23,7 +23,7 @@ router.get('/showPackages', async (req,res)=>{
 //--------------------------------------------------------------------------
 
 
-router.post('/packageAdd', authenticateToken,async (req, res) => {
+router.post('/packageAdd', async (req, res) => {
   try {
 
 
@@ -31,9 +31,11 @@ router.post('/packageAdd', authenticateToken,async (req, res) => {
    const packVerify = await pool.query('SELECT pack_id FROM package_detail WHERE pack_title = $1', [req.body.packageTitle]);
    let get_package_id ;
    if(packVerify.rows[0]) {
+    //if packge is already existed then get their id
     get_package_id =  packVerify.rows[0].pack_id
    }
    else if(packVerify.rows.length === 0){
+    //insert new record
     await pool.query('INSERT INTO package_detail(pack_title,pack_description,price) VALUES($1,$2,$3)',
   [req.body.packageTitle,req.body.packageDes,req.body.packagePrice]);
 
@@ -57,11 +59,17 @@ router.post('/packageAdd', authenticateToken,async (req, res) => {
       }else if(attibuteVerify.rows.length === 0)
       {
 
+       //insert attributes
+       let arr_atribute = req.body.attribute;
        
-       
-        await pool.query('INSERT INTO attribute_pkg(attribute_name) VALUES ($1)',
-     [req.body.attributeTitle])
+       for(let i=0;i<=arr_atribute.length-1; i++){
+        console.log(arr_atribute[i].attributeTitle);
+ await pool.query('INSERT INTO attribute_pkg(attribute_name) VALUES ($1)',
+     [arr_atribute[i].attributeTitle])
     
+       }
+       
+       
      const get_id  = await pool.query('SELECT attribute_id FROM attribute_pkg WHERE attribute_name= $1',[req.body.attributeTitle])
     
      get_attribute_id = get_id .rows[0].attribute_id

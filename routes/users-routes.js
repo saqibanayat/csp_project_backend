@@ -26,6 +26,9 @@ router.get('/allusers',authenticateToken, async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     // check the user is already present or not
+    if(!(req.body.name && req.body.email && req.body.password && req.body.role)){
+      return res.status(401).json({error:"please fill all the credentials"})
+    }
     const VerifyUser = await pool.query('select * from usersdata where user_email = $1',[req.body.email])
    
     if(VerifyUser.rows[0]) return res.status(401).json({error:"this user is already existed"});
