@@ -74,16 +74,22 @@ ALTER TABLE IF EXISTS public.serivice_user_profile
 
 CREATE TABLE IF NOT EXISTS public.service_provider_profile
 (
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    first_name character varying(30) COLLATE pg_catalog."default" NOT NULL,
-    last_name character varying(30) COLLATE pg_catalog."default" NOT NULL,
+    provider_profile_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    first_name character varying(30) COLLATE pg_catalog."default",
+    last_name character varying(30) COLLATE pg_catalog."default",
     email character varying(60) COLLATE pg_catalog."default" NOT NULL,
-    phone_no character varying(20) COLLATE pg_catalog."default" NOT NULL,
-    company character varying(50) COLLATE pg_catalog."default" NOT NULL,
-    address character varying(50) COLLATE pg_catalog."default" NOT NULL,
-    city character varying(40) COLLATE pg_catalog."default" NOT NULL,
-    zip_code smallint NOT NULL,
-    CONSTRAINT service_provider_detail_pkey PRIMARY KEY (id)
+    phone_no character varying(20) COLLATE pg_catalog."default" ,
+    company character varying(50) COLLATE pg_catalog."default",
+    address character varying(50) COLLATE pg_catalog."default" ,
+    city character varying(40) COLLATE pg_catalog."default",
+    zip_code smallint,
+    user_id uuid,
+    CONSTRAINT service_provider_detail_pkey PRIMARY KEY ( provider_profile_id),
+       
+    CONSTRAINT serivice_provider_profile_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.usersdata (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
 )
 
 TABLESPACE pg_default;

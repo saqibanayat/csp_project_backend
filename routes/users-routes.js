@@ -53,6 +53,10 @@ router.post('/', async (req, res) => {
       await pool.query(
       'INSERT INTO service_user_profile (email,user_id) VALUES ($1,$2)'
       , [ req.body.email,get_id.rows[0].user_id]);
+    }else if(userType.rows[0].user_type_name==='service_provider'){
+      await pool.query(
+        'INSERT INTO service_provider_profile (email,user_id) VALUES ($1,$2)'
+        , [ req.body.email,get_id.rows[0].user_id]);
     }
      
 
