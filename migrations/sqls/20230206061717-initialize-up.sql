@@ -1,25 +1,40 @@
 /* Replace with your SQL commands */
 
 
--- Table: public.usersdata
+    -- Table: public.user_role
 
--- DROP TABLE IF EXISTS public.usersdata;
+-- DROP TABLE IF EXISTS public.user_role;
 
-CREATE TABLE IF NOT EXISTS public.usersdata
+CREATE TABLE IF NOT EXISTS public.user_role
 (
-    user_id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    user_name text COLLATE pg_catalog."default" NOT NULL,
-    user_email text COLLATE pg_catalog."default" NOT NULL,
-    user_password text COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT users_data_pkey PRIMARY KEY (user_id),
-    CONSTRAINT users_data_user_email_key UNIQUE (user_email)
+    role_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    user_type_name character varying(30) COLLATE pg_catalog."default" NOT NULL,
+   
+    CONSTRAINT user_type_pkey PRIMARY KEY (role_id)
+   
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public.usersdata
+ALTER TABLE IF EXISTS public.user_type
     OWNER to postgres;
 
+
+-- Table: public.attribute_pkg
+
+-- DROP TABLE IF EXISTS public.attribute_pkg;
+
+CREATE TABLE IF NOT EXISTS public.attribute_pkg
+(
+    attribute_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    attribute_name character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT attribute_pkg_pkey PRIMARY KEY (attribute_id)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.attribute_pkg
+    OWNER to postgres;
 
 
 -- Table: public.package_detail
@@ -39,6 +54,35 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.package_detail
     OWNER to postgres;
+
+
+
+-- Table: public.usersdata
+
+-- DROP TABLE IF EXISTS public.usersdata;
+
+CREATE TABLE IF NOT EXISTS public.usersdata
+(
+    user_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+    user_name text COLLATE pg_catalog."default" NOT NULL,
+    user_email text COLLATE pg_catalog."default" NOT NULL,
+    user_password text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT users_data_pkey PRIMARY KEY (user_id),
+    role_id uuid,
+    CONSTRAINT users_data_user_email_key UNIQUE (user_email),
+     CONSTRAINT usersdata_role_id_fkey FOREIGN KEY (role_id)
+        REFERENCES public.user_role (role_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.usersdata
+    OWNER to postgres;
+
+
+
 
 
 -- Table: public.serivice_user_profile
@@ -98,45 +142,6 @@ ALTER TABLE IF EXISTS public.service_provider_profile
     OWNER to postgres;
 
     
--- Table: public.attribute_pkg
-
--- DROP TABLE IF EXISTS public.attribute_pkg;
-
-CREATE TABLE IF NOT EXISTS public.attribute_pkg
-(
-    attribute_id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    attribute_name character varying(100) COLLATE pg_catalog."default" NOT NULL,
-    CONSTRAINT attribute_pkg_pkey PRIMARY KEY (attribute_id)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.attribute_pkg
-    OWNER to postgres;
-
-
-    -- Table: public.user_type
-
--- DROP TABLE IF EXISTS public.user_type;
-
-CREATE TABLE IF NOT EXISTS public.user_type
-(
-    id uuid NOT NULL DEFAULT uuid_generate_v4(),
-    user_type_name character varying(30) COLLATE pg_catalog."default" NOT NULL,
-    user_id uuid,
-    CONSTRAINT user_type_pkey PRIMARY KEY (id),
-    CONSTRAINT user_type_user_id_fkey FOREIGN KEY (user_id)
-        REFERENCES public.usersdata (user_id) MATCH SIMPLE
-        ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE IF EXISTS public.user_type
-    OWNER to postgres;
-
-
 
 
 -- Table: public.package_attribute

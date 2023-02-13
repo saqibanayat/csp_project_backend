@@ -3,7 +3,7 @@ const express = require('express');
 
 const pool = require('../db.js');
 
-// const {authenticateToken} =require( '../middleware/authorization.js')
+const {authenticateToken} =require( '../middleware/authorization.js')
 const router = express.Router();
 
 
@@ -12,7 +12,7 @@ const router = express.Router();
 
 //show all the packages 
 
-router.get('/showPackages', async (req, res) => {
+router.get('/showPackages', authenticateToken,async (req, res) => {
   try {
     const users = await pool.query('select * from package_Detail');
     res.json(users.rows);
@@ -72,15 +72,16 @@ router.post('/packageAdd', async (req, res) => {
 
 //find attributes of single package
 
-router.post('/showAttributes', async (req, res) => {
+router.post('/showAttributes',authenticateToken, async (req, res) => {
   try {
     const packId = await pool.query('select pack_id from package_Detail where pack_title=$1', [req.body.packageTitle]);
     if (packId.rows.length === 0) return res.status(401).json({ error: "please chose valid pacakge" });
     // console.log(packId);
     const getPackId = packId.rows[0].pack_id;
-    console.log(getPackId);
-    
-  const Attributes = await pool.query('SELECT  Attribute_pkg.attribute_name FROM Package_attribute JOIN Attribute_pkg ON Package_attribute.attribute_id=Attribute_pkg.attribute_id where Package_attribute.pack_id=$1', [getPackId])
+   
+    console.log(req.user)
+  const Attributes = await pool.query(`SELECT  Attribute_pkg.attribute_name FROM Package_attribute JOIN 
+  Attribute_pkg ON Package_attribute.attribute_id=Attribute_pkg.attribute_id where Package_attribute.pack_id=$1`, [getPackId])
  
      let getAttributes=Attributes.rows;
     

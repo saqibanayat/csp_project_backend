@@ -32,32 +32,32 @@ router.post('/', async (req, res) => {
     const VerifyUser = await pool.query('select * from usersdata where user_email = $1',[req.body.email])
    
     if(VerifyUser.rows[0]) return res.status(401).json({error:"this user is already existed"});
+
+
+    let findRole = await pool.query('select role_name from user_role where role_name=$1',[req.body.role])
+    console.log(findRole.rows[0].role_name)
+    let getRoleId;
+    if(findRole.rows[0].role_name==='service_user'){
+      getRoleId = await pool.query(`select role_id from user_role where role_name ='service_user' `)
+    }else if(findRole.rows[0].role_name==='service_provider'){
+      console.log('provider env')
+      getRoleId = await pool.query(`select role_id from user_role where role_name ='service_provider' `)
+    }
+console.log(getRoleId.rows[0].role_id)
 //create a new user
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
    await pool.query(
-      'INSERT INTO usersdata (user_name,user_email,user_password) VALUES ($1,$2,$3) RETURNING *'
-      , [req.body.name, req.body.email, hashedPassword]);
-
-//check the user record and get the id 
-      const get_id = await pool.query('SELECT user_id FROM usersdata WHERE user_email=$1',[req.body.email])
+      'INSERT INTO usersdata (user_name,user_email,user_password,role_id) VALUES ($1,$2,$3,$4) RETURNING *'
+      , [req.body.name, req.body.email, hashedPassword,getRoleId.rows[0].role_id]);
 
 
-      //create user_type
-     await pool.query('INSERT INTO user_type(user_type_name,user_id) VALUES($1,$2)',[req.body.role,get_id.rows[0].user_id])
 
 
-     //create record in edit profile
-     const userType =await pool.query('SELECT user_type_name FROM user_type WHERE user_id = $1',[get_id.rows[0].user_id])
+
     
-    if(userType.rows[0].user_type_name==='service_user'){
-      await pool.query(
-      'INSERT INTO service_user_profile (email,user_id) VALUES ($1,$2)'
-      , [ req.body.email,get_id.rows[0].user_id]);
-    }else if(userType.rows[0].user_type_name==='service_provider'){
-      await pool.query(
-        'INSERT INTO service_provider_profile (email,user_id) VALUES ($1,$2)'
-        , [ req.body.email,get_id.rows[0].user_id]);
-    }
+    
+    
+ 
      
 
     res.send('you successfully registered');

@@ -42,7 +42,7 @@ router.post('/login', async (req, res) => {
 });
 
 //reset password
-router.post('/resetpassword', async (req, res) => {
+router.post('/forgetpassword', async (req, res) => {
 try{
   if(!(req.body.email )){
     return res.status(401).json({error:"please fill all the credentials"})
@@ -105,7 +105,41 @@ res.json({message:"please check your email for new password"})
 })
 
 
-
+router.post('/restpassword/:id',async(req,res)=>{
+  try{
+    let user = await pool.query("select * from usersdata where user_id = $1", [
+      req.params.id,
+    ]);
+   
+    if (!user.rows[0]) {
+      return res.json({ message: "user not found" });
+    }
+    
+    let { newPassword, confirmPassword } = req.body;
+    // if (!bcrypt.compareSync(password, user.rows[0].password)) {
+    //   return res.json({ message: "oldpassword does not match" });
+    // }
+    if (newPassword != confirmPassword) {
+      return res.json({ message: "newpassword does not match" });
+    }
+  
+    const hashedPassword = await bcrypt.hash(newpassword, 10);
+    
+  
+    // user.rows[0].password = hashedPassword;
+  
+   
+    await pool.query("update usersdata set user_password = $1 where user_id =$2", [
+     hashedPassword,
+      req.params.id,
+    ]);
+    res.json({
+      message: "Password changed successfully",
+    });
+  }catch(error) {
+    res.status(401).json({error: error.message});
+  }
+})
 
 router.get('/refresh_token',(req,res)=>{
   try {
