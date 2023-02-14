@@ -1,13 +1,13 @@
 
 const express=require('express');
 const cors = require('cors');
-const usersRouter = require('./routes/users-routes.js');
+
 const authRouter = require('./routes/auth-routes.js');
 const dotenv = require('dotenv');
 const cookieParser =require('cookie-parser');
 const packageRoute = require('./routes/PackagesRoutes.js');
-const userProfile = require('./routes/ProfileEdit.js');
-const attributeValue = require('./routes/Attributes.js')
+const editProfile = require('./routes/editProfile_route.js');
+
 dotenv.config();
 
 
@@ -22,11 +22,11 @@ app.use(cookieParser());
 
 
 app.use('/api/auth',authRouter);
-app.use('/api/register', usersRouter);
-app.use('/api/',usersRouter);
+
+
 app.use('/api/', packageRoute);
-app.use('/api/',userProfile)
-app.use('/api/',attributeValue)
+app.use('/api/',editProfile)
+
 
 app.listen(PORT, ()=> {
   console.log(`Server is listening on port:${PORT}`);
