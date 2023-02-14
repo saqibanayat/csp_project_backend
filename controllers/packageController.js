@@ -99,3 +99,24 @@ exports.show_Attributes = catchAsyncFun(async(req,res)=>{
        res.status(500).json({error: error.message});
      }
 })
+
+
+exports.addFilterPackages=catchAsyncFun(async(req,res)=>{
+  try {
+      let arr_attributeId = req.body.attibutesId;
+      let packages;
+  for (let i = 0; i <= arr_attributeId.length - 1; i++) {
+
+  packages= await pool.query(`SELECT package_detail.pack_title FROM package_detail JOIN 
+    package_attribute ON Package_attribute.pack_id=package_detail.pack_id where
+	Package_attribute.attribute_id=$1`,
+[arr_attributeId[i].attribute_id])
+
+  }
+ 
+  res.json(packages.rows)
+  } catch (error) {
+    res.status(500).json({error: error.message});
+  }
+
+})

@@ -34,7 +34,7 @@ exports.newUser = catchAsyncFun(async(req,res)=>{
       
       getRoleId = await pool.query(`select role_id from user_role where role_name ='service_provider' `)
     }
-console.log(getRoleId.rows[0].role_id)
+
 //create a new user
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
    await pool.query(
@@ -50,7 +50,7 @@ console.log(getRoleId.rows[0].role_id)
 exports.allUser = catchAsyncFun(async(req,res)=>{
 
   try {
-    console.log(req.cookies);
+    
     const users = await pool.query('SELECT * FROM usersdata');
     res.json({users : users.rows});
   } catch (error) {
@@ -87,7 +87,7 @@ exports.login = catchAsyncFun(async(req,res)=>{
         
         let tokens = jwtTokens(users.rows[0]);//Gets access and refresh tokens
         // let refresh = refreshJwtToken(users.rows[0])
-        res.cookie('refresh_token', tokens.accessToken, {httpOnly: true,sameSite:'None',maxAge:1000*60*60*24});
+        res.cookie('refresh_token', tokens.accessToken, {httpOnly: true,sameSite:'None',secure:true,domain:'localhost:3000',maxAge:1000*60*60*24});
         res.json({getUserRole,userName,tokens});
       } catch (error) {
         res.status(401).json({error: error.message});
@@ -220,7 +220,7 @@ exports.refreshToken = catchAsyncFun(async(req,res)=>{
 
     try {
         const refreshToken = req.cookies.refresh_token;
-  
+  console.log(refreshToken);
         if(refreshToken ===null) return res.status(401).json ({error:'null refresh token'});
 
         jwt.verify(refreshToken,process.env.REFRESH_TOKEN_SECRET,(error,user)=>{
@@ -229,7 +229,7 @@ exports.refreshToken = catchAsyncFun(async(req,res)=>{
 
             let refreshTk = refreshJwtToken(user);
             let token= jwtTokens(user);
-            res.cookie('refresh_token',refreshTk.refreshToken,{httpOnly:true});
+            res.cookie('refresh_token', refreshTk.accessToken, {httpOnly: true,sameSite:'None',secure:true,domain:'localhost:3000',maxAge:1000*60*60*24});
             res.json(token);
 
         })
