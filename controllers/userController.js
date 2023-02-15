@@ -103,23 +103,23 @@ exports.forgetPassword = catchAsyncFun(async(req,res)=>{
         if(!(req.body.email )){
           return res.status(401).json({error:"please fill all the credentials"})
         }
-      let user=await pool.query('select user_email from usersdata where user_email = $1',[req.body.email])
+      let user=await pool.query('select * from usersdata where user_email = $1',[req.body.email])
       if (user.rows.length === 0) return res.status(401).json({error:"user not found"});
-      
-      const num = 8;
-      const randomNameGenerator = num => {
-         let res = '';
-         for(let i = 0; i < num; i++){
-            const random = Math.floor(Math.random() * 27);
-            res += String.fromCharCode(97 + random);
-         };
-         return res;
-      };
-      let newpassword=randomNameGenerator(num);
+      console.log(user.rows[0].user_id);
+      // const num = 8;
+      // const randomNameGenerator = num => {
+      //    let res = '';
+      //    for(let i = 0; i < num; i++){
+      //       const random = Math.floor(Math.random() * 27);
+      //       res += String.fromCharCode(97 + random);
+      //    };
+      //    return res;
+      // };
+      // let newpassword=randomNameGenerator(num);
       
       
       // const hashedPassword = await bcrypt.hash(randomNameGenerator(num), 10);
-      await pool.query('update usersdata set user_password=$1 where user_email=$2',[newpassword,req.body.email])
+      // await pool.query('update usersdata set user_password=$1 where user_email=$2',[newpassword,req.body.email])
       
       
       var transporter = nodemailer.createTransport({
@@ -131,14 +131,13 @@ exports.forgetPassword = catchAsyncFun(async(req,res)=>{
           pass: "gxtioueedssetghd"
         },
       });
-      // var link = "http://localhost:8000/api/auth/:id" + hashedlink;
+      var link = "http://localhost:8000/api/auth/restpassword/"+user.rows[0].user_id; 
       var mailOptions = {
         from: "testing@engcoders.com",
         to: req.body.email,
         subject: "Welcome to rojer's project",
         html:
-          `<p>this is your new password </p></br>
-          <p> ${newpassword}</p>`
+         "<p>clik the link and rest your password</p><a href="+link+">Click here</a>"
          
           
       };
